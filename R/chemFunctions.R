@@ -42,7 +42,7 @@ formulaSplit <- function(form) {
 
 library(dplyr)
 ## Return atom counts
-getCount <- function(form) {
+getCount <- function(form, type = 'table') {
   split.formula <- formulaSplit(form)
   fAll <- lapply(split.formula, function(x) {
     df <- atomCounts(x[2])
@@ -54,5 +54,9 @@ getCount <- function(form) {
     group_by(Element) %>%
     summarise(Count = sum(Count)) %>%
     arrange(Element)
-  return(df.form)
+  if (type == 'table') {
+    return(df.form)
+  } else {
+    return(paste0(paste0(df.form[[1]], df.form[[2]], collapse = '')))
+  }
 }
