@@ -93,8 +93,14 @@ getMolecularFormula <- function(form = '', output = 'table', order = 'hill') {
   df.form <- bind_rows(fAll)
   df.form <- df.form %>%
     group_by(Element) %>%
-    summarise(Count = sum(Count))
-  hillOrder <- c('C', 'H', df.form[['Element']][!df.form[['Element']] %in% c('C', 'H')])
+    summarise(Count = sum(Count)) %>%
+    arrange(Element)
+
+  if ('C' %in% df.form[['Element']]) {
+    hillOrder <- c('C', 'H', df.form[['Element']][!df.form[['Element']] %in% c('C', 'H')])
+  } else {
+    hillOrder <- df.form[['Element']]
+  }
   if (order == 'hill') {
     df.form <- df.form %>% slice(match(hillOrder, Element))
   } else {
