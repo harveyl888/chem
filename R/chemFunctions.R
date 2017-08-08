@@ -42,7 +42,7 @@ formulaSplit <- function(form) {
 
 library(dplyr)
 ## Return atom counts
-getCount <- function(form, type = 'table') {
+getMOlecularFormula <- function(form, output = 'table', order = 'hill') {
   split.formula <- formulaSplit(form)
   fAll <- lapply(split.formula, function(x) {
     df <- atomCounts(x[2])
@@ -52,11 +52,16 @@ getCount <- function(form, type = 'table') {
   df.form <- bind_rows(fAll)
   df.form <- df.form %>%
     group_by(Element) %>%
-    summarise(Count = sum(Count)) %>%
-    arrange(Element)
-  if (type == 'table') {
+    summarise(Count = sum(Count))
+  hillOrder <- c('C', 'H', df.form[['Element']][!df.form[['Element']] %in% c('C', 'H')])
+  if (order == 'hill') {
+    df.form <- df.form %>% slice(match(hillOrder, Element))
+  } else {
+    df.form <- df.form %>% arrange(Element)
+  }
+  if (output == 'table') {
     return(df.form)
   } else {
-    return(paste0(paste0(df.form[[1]], df.form[[2]], collapse = '')))
+    return(paste0(paste0(df.form[[1]], ifelse(df.form[[2]] > 1, df.form[[2]], ''), collapse = '')))
   }
 }
