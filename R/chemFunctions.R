@@ -11,3 +11,32 @@ atomCounts <- function(form) {
   df.split[is.na(df.split)] <- 1
   return(df.split[2:3])
 }
+
+## Split a formula into chunks and return atom counts
+formulaSplit <- function(form) {
+  out <- list()
+  formulaSplitInternal <- function(form, mult) {
+    form.section <- str_extract_all(form, '[A-Z][a-z]?\\d*|\\((?:[^()]*(?:\\(.*\\))?[^()]*)+\\)\\d+')[[1]]
+    send.out <- form.section[!grepl('\\(', form.section)]
+    send.recurse <- form.section[grepl('\\(', form.section)]
+    for (i in send.out) out[[length(out) + 1]] <<- c(mult, i)
+    if (length(send.recurse) == 0) {
+    } else {
+      for (i in send.recurse) {
+        newMultAll <- str_extract_all(i, '\\)\\d+')[[1]]
+        newMultLast <- newMultAll[length(newMultAll)]
+        if (nchar(newMultLast) == 1) {
+          m <- mult
+        } else {
+          m <- mult * as.integer(substring(newMultLast, 2))
+        }
+        newForm <- substring(i, 2, nchar(i)-nchar(newMultLast))
+        Recall(newForm, m)
+      }
+    }
+  }
+  formulaSplitInternal(form, 1)
+  return(out)
+}
+
+
