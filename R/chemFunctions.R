@@ -77,13 +77,14 @@ getMolecularFormula <- function(form = '', output = 'table', order = 'hill') {
 
   ## check for X.Y formula
   v.formulae <- str_trim(unlist(str_split(form, '\\.')))
+  v.multiplier <- str_extract(v.formulae, '^\\d+')
 
   ## split formula for each section
-  fAll <- lapply(v.formulae, function(x) {
-    split.formula <- formulaSplit(x)
+  fAll <- lapply(seq(v.formulae), function(x) {
+    split.formula <- formulaSplit(v.formulae[x])
     df.out <- lapply(split.formula, function(y) {
       df <- atomCounts(y[2])
-      df[[2]] <- df[[2]] * as.numeric(y[1])
+      df[[2]] <- df[[2]] * as.numeric(y[1]) * ifelse(is.na(v.multiplier[x]), 1, as.numeric(v.multiplier[x]))
       df
     })
     bind_rows(df.out)
