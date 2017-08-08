@@ -1,7 +1,12 @@
-
-library(stringr)
-
-## Return a table of atomcounts from a chemical formula
+#' Count element occurrence
+#'
+#' Return a table of atomcounts from a chemical formula
+#'
+#' @param form Input formula
+#'
+#' @return data frame consisting of molecular symbol, element and count
+#'
+#' @import stringr
 atomCounts <- function(form) {
   ## Split the formula string
   f.split <- str_match_all(form, '([A-Z][a-z]*)(\\d*)')
@@ -12,7 +17,13 @@ atomCounts <- function(form) {
   return(df.split[2:3])
 }
 
-## Split a formula into chunks and return atom counts
+#' Split chemical formula
+#'
+#' Split a formula into chunks and return atom counts
+#'
+#' @param form Input formula
+#'
+#' @import stringr
 formulaSplit <- function(form) {
   out <- list()
   formulaSplitInternal <- function(form, mult) {
@@ -40,8 +51,18 @@ formulaSplit <- function(form) {
 }
 
 
-library(dplyr)
-## Return atom counts
+#' Return a molecular formula
+#'
+#' Return a standardized molecular formula
+#'
+#' @param form Input formula
+#' @param output output type - either table (columns = Element and Count) or formula (string)
+#' @param order atom ordering - either alpha or hill notation
+#'
+#' @return a tibble or string corresponding to the molecular formula
+#'
+#' @import dplyr
+#' @export
 getMOlecularFormula <- function(form, output = 'table', order = 'hill') {
   split.formula <- formulaSplit(form)
   fAll <- lapply(split.formula, function(x) {
