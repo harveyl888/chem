@@ -86,3 +86,21 @@ getMOlecularFormula <- function(form, output = 'table', order = 'hill') {
     return(paste0(paste0(df.form[[1]], ifelse(df.form[[2]] > 1, df.form[[2]], ''), collapse = '')))
   }
 }
+
+
+#' Calculate exact mass
+#'
+#' Calculate exact mass from formula
+#'
+#' @param form Input formula
+#'
+#' @return exact mass (numeric)
+#'
+#' @export
+exactMass <- function(form) {
+  df.form <- getMOlecularFormula(form, output = 'table', order = 'alpha')
+  atomMissing <- which(!df.form[[1]] %in% df.mass$atom)
+  if (length(atomMissing) > 0) return (paste0('atoms not recognized: ', paste0(df.form[atomMissing, 1], collapse=', ')))
+  exact_mass <- sum(apply(df.form, 1, function(x) as.numeric(x[2]) * df.mass[df.mass$atom == x[1], ]$mass))
+  return(exact_mass)
+}
