@@ -63,7 +63,7 @@ formulaSplit <- function(form) {
 #'
 #' @import dplyr
 #' @export
-getMOlecularFormula <- function(form, output = 'table', order = 'hill') {
+getMolecularFormula <- function(form, output = 'table', order = 'hill') {
   split.formula <- formulaSplit(form)
   fAll <- lapply(split.formula, function(x) {
     df <- atomCounts(x[2])
@@ -98,7 +98,7 @@ getMOlecularFormula <- function(form, output = 'table', order = 'hill') {
 #'
 #' @export
 exactMass <- function(form) {
-  df.form <- getMOlecularFormula(form, output = 'table', order = 'alpha')
+  df.form <- getMolecularFormula(form, output = 'table', order = 'alpha')
   atomMissing <- which(!df.form[[1]] %in% df.mass$atom)
   if (length(atomMissing) > 0) return (paste0('atoms not recognized: ', paste0(df.form[atomMissing, 1], collapse=', ')))
   exact_mass <- sum(apply(df.form, 1, function(x) as.numeric(x[2]) * df.mass[df.mass$atom == x[1], ]$mass))
