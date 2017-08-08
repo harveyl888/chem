@@ -63,7 +63,7 @@ formulaSplit <- function(form) {
 #'
 #' @import dplyr
 #' @export
-getMolecularFormula <- function(form, output = 'table', order = 'hill') {
+getMolecularFormula <- function(form = '', output = 'table', order = 'hill') {
 
   ## initial check - NA, NULL or empty string
   if (is.null(form)) return ('no formula')
@@ -75,12 +75,20 @@ getMolecularFormula <- function(form, output = 'table', order = 'hill') {
   ## check for R group
   if (grepl('R(?![anehgbuf])', form, perl = TRUE) | form == 'R group') return ('R group')
 
-  split.formula <- formulaSplit(form)
-  fAll <- lapply(split.formula, function(x) {
-    df <- atomCounts(x[2])
-    df[[2]] <- df[[2]] * as.numeric(x[1])
-    df
+  ## check for X.Y formula
+  v.formulae <- str_trim(unlist(str_split(form, '\\.')))
+
+  ## split formula for each section
+  fAll <- lapply(v.formulae, function(x) {
+    split.formula <- formulaSplit(x)
+    df.out <- lapply(split.formula, function(y) {
+      df <- atomCounts(y[2])
+      df[[2]] <- df[[2]] * as.numeric(y[1])
+      df
+    })
+    bind_rows(df.out)
   })
+
   df.form <- bind_rows(fAll)
   df.form <- df.form %>%
     group_by(Element) %>%
