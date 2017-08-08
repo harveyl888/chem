@@ -64,6 +64,17 @@ formulaSplit <- function(form) {
 #' @import dplyr
 #' @export
 getMolecularFormula <- function(form, output = 'table', order = 'hill') {
+
+  ## initial check - NA, NULL or empty string
+  if (is.null(form)) return ('no formula')
+  if (is.na(form) | nchar(form) == 0 | form == '.' | form == 'no formula') return ('no formula')
+
+  ## check for polymer
+  if (grepl('\\)n', form) | form == 'polymer') return ('polymer')
+
+  ## check for R group
+  if (grepl('R(?![anehgbuf])', form, perl = TRUE) | form == 'R group') return ('R group')
+
   split.formula <- formulaSplit(form)
   fAll <- lapply(split.formula, function(x) {
     df <- atomCounts(x[2])
