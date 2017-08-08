@@ -40,3 +40,19 @@ formulaSplit <- function(form) {
 }
 
 
+library(dplyr)
+## Return atom counts
+getCount <- function(form) {
+  split.formula <- formulaSplit(form)
+  fAll <- lapply(split.formula, function(x) {
+    df <- atomCounts(x[2])
+    df[[2]] <- df[[2]] * as.numeric(x[1])
+    df
+  })
+  df.form <- bind_rows(fAll)
+  df.form <- df.form %>%
+    group_by(Element) %>%
+    summarise(Count = sum(Count)) %>%
+    arrange(Element)
+  return(df.form)
+}
