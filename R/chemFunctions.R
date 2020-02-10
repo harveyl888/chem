@@ -169,3 +169,47 @@ cas_to_smiles <- function(cas) {
     NA
   })
 }
+
+
+#' Extact data from PubChem
+#'
+#' Extact data from PubChem using the cas number as a lookup.
+#'     If more than one CID are matched, data for the highest ranked one are returned
+#'
+#' @param cas Input cas
+#'
+#' @return named list of properties
+#'
+#' @import jsonlite
+#' @import dplyr
+#'
+#' @export
+#'
+data_from_pubchem <- function(cas) {
+  url_txt <- sprintf('https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/xref/RN/%s/cids/json', cas)
+  top_cid <- tryCatch({
+    grab_cids <- jsonlite::fromJSON(url(url_txt), flatten = T)
+    df_cids <- grab_cids$InformationList$Information
+    df_cids$CID <- sapply(df_cids$CID, function(x) if_else(is.null(x), NA_integer_, x))
+    df_cids %>%
+      dplyr::filter(!is.na(CID)) %>%
+      dplyr::group_by(CID) %>%
+      dplyr::summarise(count=n()) %>%
+      dplyr::arrange(desc(count)) %>%
+      dplyr::slice(1) %>%
+      dplyr::select(CID) %>%
+      dplyr::pull()
+  },
+  error = function(e) {
+    NA
+  })
+  if (!is.na(top_cid)) {
+    url_txt <- sprintf('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/%s/property/CanonicalSMILES,IsomericSMILES,InChI,IUPACName,MolecularFormula/json', top_cid)
+    pubchem_out <- jsonlite::fromJSON(url(url_txt))
+    l.pubchem <- pubchem_out$PropertyTable$Properties
+    l.pubchem[['cas']] <- cas
+    l.pubchem
+  } else {
+    list(cas = cas)
+  }
+}

@@ -2,7 +2,9 @@
 
 export(cas_check)
 export(cas_to_smiles)
+export(data_from_pubchem)
 export(exactMass)
 export(getMolecularFormula)
 import(dplyr)
+import(jsonlite)
 import(stringr)
