@@ -149,4 +149,23 @@ cas_check <- function(cas) {
   return(cas_sum %% 10 == cas_validation)
 }
 
-
+#' return smiles string from cas
+#'
+#' return a smiles string from a cas identifier using the NCI/CADD cactus service.
+#'     If no smiles string is availble then NA is returned.
+#'
+#' @param cas Input cas
+#'
+#' @return string
+#'
+#' @export
+cas_to_smiles <- function(cas) {
+  url <- sprintf('https://cactus.nci.nih.gov/chemical/structure/%s/smiles', cas)
+  tryCatch({
+    smiles <- readLines(url, warn = FALSE)
+    smiles[1]
+  },
+  error = function(e) {
+    NA
+  })
+}
