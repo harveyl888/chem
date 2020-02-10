@@ -130,3 +130,23 @@ exactMass <- function(form) {
   exact_mass <- sum(apply(df.form, 1, function(x) as.numeric(x[2]) * df.mass[df.mass$atom == x[1], ]$mass))
   return(exact_mass)
 }
+
+
+#' Check cas number is correct
+#'
+#' Check cas number is correct and return true if valid or false if not
+#'
+#' @param cas Input cas
+#'
+#' @return boolean
+#'
+#' @export
+cas_check <- function(cas) {
+  cas_split <- str_split(cas, '-')[[1]]
+  cas_validation <- as.numeric(cas_split[3])
+  cas_to_check <- as.numeric(rev(strsplit(paste0(cas_split[1], cas_split[2]), '')[[1]]))
+  cas_sum <- sum(cas_to_check * seq(length(cas_to_check)))
+  return(cas_sum %% 10 == cas_validation)
+}
+
+
