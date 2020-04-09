@@ -1,7 +1,7 @@
 Package: chem
 Type: Package
 Title: Chemistry Routines
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Harvey", "Lieberman", email = "harvey.lieberman@gmail.com", role = c("aut", "cre"))
 Description: General chemistry functions
 License: GPL-3
