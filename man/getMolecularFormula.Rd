@@ -4,7 +4,7 @@
 \alias{getMolecularFormula}
 \title{Return a molecular formula}
 \usage{
-getMolecularFormula(form, output = "table", order = "hill")
+getMolecularFormula(form = "", output = "table", order = "hill")
 }
 \arguments{
 \item{form}{Input formula}
